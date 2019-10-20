@@ -10,6 +10,10 @@ import { SpotifyService } from 'src/app/services/spotify.service';
 export class HomeComponent implements OnInit {
 
   nuevasCanciones: any[] = [];
+  loading: boolean;
+
+  error: boolean;
+  mnsErr: string;
 
   //  paises: any[] = [];
 
@@ -22,11 +26,23 @@ export class HomeComponent implements OnInit {
   //}
 
   constructor(private spotifyService:SpotifyService){
+    this.loading = true;
+    this.mnsErr = '';
+
     this.spotifyService.getNewReleases()
       .subscribe( (data: any) => {
         console.log(data);
         this.nuevasCanciones = data;
-      } )
+        this.loading = false;
+        this.error = false;
+      }, (errorServicio => {
+        this.error = true
+        this.loading = false;
+        this.mnsErr = errorServicio.error.error.message;
+        console.log(errorServicio);    
+      }) )
+
+     
   }
 
   ngOnInit() {
